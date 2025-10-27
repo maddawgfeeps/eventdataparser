@@ -68,6 +68,7 @@ class EventDataParser:
     def process(self):
         events_data = []  # List to store event data for sorting
         files = sorted([f for f in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, f)) and f.lower().endswith(".txt")])
+        sd_files = [f for f in files if "_sd" in f.lower()]
         
         for filename in files:
             if "_sd" in filename.lower() or "smp_showdown_" in filename.lower():
@@ -118,6 +119,41 @@ class EventDataParser:
                     start_epoch, end_epoch = schedule[0]["Time_ActiveBetweenAny"][0]
                 except Exception:
                     pass
+
+            # Find matching _SD file
+            sd_prizes = {}
+            sd_event_name = None
+            norm_year = title.split("_")[-1] if "_" in title else "2025"
+            norm_title = re.sub(r'[_ ]', '', title.lower()).replace(norm_year.lower(), "")
+            matching_sd_file = None
+            for sd_file in sd_files:
+                norm_sd = re.sub(r'[_ ]', '', sd_file.lower()).replace("sd" + norm_year.lower() + ".txt", "")
+                if norm_sd == norm_title:
+                    matching_sd_file = sd_file
+                    break
+
+            if matching_sd_file:
+                sd_path = os.path.join(self.folder, matching_sd_file)
+                try:
+                    with open(sd_path, "r", encoding="utf-8") as fh:
+                        sd_content = fh.read()
+                    sd_data = json.loads(sd_content)
+                    sd_title = list(sd_data.keys())[0]
+                    sd_event = sd_data[sd_title]
+                    sd_event_name = translate_event_name(sd_title, self.translations)
+                    brackets = sd_event.get("ShowdownMilestoneRewards", {}).get("RewardContainers", {}).get(sd_title, {}).get("brackets", [])
+                    for bracket in brackets:
+                        threshold = bracket.get("threshold")
+                        for rew in bracket.get("rewards", []):
+                            reward = rew.get("reward", {})
+                            if reward.get("rewardType") == 11:
+                                name = reward.get("name")
+                                if name:
+                                    sd_prizes[name] = threshold
+                    if sd_prizes:
+                        debug_log(f"Extracted SD prizes from {matching_sd_file}: {sd_prizes}", "info")
+                except Exception as e:
+                    debug_log(f"Failed to process SD file {matching_sd_file}: {e}", "error")
 
             # Process lockins (unchanged)
             lockins = event.get("LockinNamespaces", {}).get("Namespaces", {}).get(title, {}).get("LockinSlotsList", [])
@@ -271,9 +307,17 @@ class EventDataParser:
                                     annotations.append(f"{friendly}")
                                 break
 
+                        # Add SD prize annotation
+                        for sd_name, thresh in sd_prizes.items():
+                            if is_match(sd_name, model_raw) or is_match(model_raw, sd_name):
+                                sd_text = f"{sd_event_name} {thresh} SD Prize Car"
+                                console_sd_text = f"{Fore.BLUE}{sd_text}{Style.RESET_ALL}"
+                                annotations.append(console_sd_text)
+                                break
+
                         if annotations:
                             console_lines.append(f"{console_display} - {' / '.join(annotations)}")
-                            file_lines.append(f"{file_display} - {' / '.join([a.replace(Fore.YELLOW, '').replace(Style.RESET_ALL, '') for a in annotations])}")
+                            file_lines.append(f"{file_display} - {' / '.join([a.replace(Fore.YELLOW, '').replace(Fore.BLUE, '').replace(Style.RESET_ALL, '') for a in annotations])}")
                         else:
                             console_lines.append(console_display)
                             file_lines.append(file_display)
