@@ -66,9 +66,9 @@ class EventDataParser:
         return rewards_out
 
     def process(self):
-        console_lines = []
-        file_lines = []
+        events_data = []  # List to store event data for sorting
         files = sorted([f for f in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, f)) and f.lower().endswith(".txt")])
+        
         for filename in files:
             if "_sd" in filename.lower() or "smp_showdown_" in filename.lower():
                 if self.debug:
@@ -106,6 +106,11 @@ class EventDataParser:
             event = data[title]
             debug_log(f"Processing {title}", "info")
 
+            # Initialize lists for this event's output
+            console_lines = []
+            file_lines = []
+
+            # Extract schedule
             schedule = event.get("EventSchedule", {}).get("ScheduleList", [])
             start_epoch = end_epoch = None
             if schedule and isinstance(schedule, list) and "Time_ActiveBetweenAny" in schedule[0]:
@@ -114,6 +119,7 @@ class EventDataParser:
                 except Exception:
                     pass
 
+            # Process lockins (unchanged)
             lockins = event.get("LockinNamespaces", {}).get("Namespaces", {}).get(title, {}).get("LockinSlotsList", [])
             slot_models = {}
             for entry in lockins:
@@ -193,6 +199,7 @@ class EventDataParser:
                             gold_rewards.append(rn)
             gold_rewards = list(dict.fromkeys(gold_rewards))
 
+            # Build event output
             pretty_title = translate_event_name(title, self.translations)
             if pretty_title != title:
                 console_lines.append(f"{Fore.CYAN}{pretty_title}{Style.RESET_ALL} ({title})")
@@ -300,6 +307,23 @@ class EventDataParser:
                             file_lines.append(f"Prize Car : {self.translations.get(max_info.get('name'), max_info.get('name'))}")
             console_lines.append("")
             file_lines.append("")
+
+            # Store event data
+            events_data.append({
+                "start_epoch": start_epoch if start_epoch else float("inf"),  # Use inf for events without dates
+                "console_lines": console_lines,
+                "file_lines": file_lines
+            })
+
+        # Sort events by start_epoch
+        events_data.sort(key=lambda x: x["start_epoch"])
+
+        # Generate final output
+        console_lines = []
+        file_lines = []
+        for event in events_data:
+            console_lines.extend(event["console_lines"])
+            file_lines.extend(event["file_lines"])
 
         console_text = "\n".join(console_lines)
         print(console_text)
