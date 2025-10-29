@@ -1,0 +1,1059 @@
+{
+    "TOURNAMENT_244": {
+        "TournamentConfig": {
+            "TournamentEvents": {
+                "244": {
+                    "TemplateId": "3Days",
+                    "PeriodDetails": {
+                        "Day1": {
+                            "Race1": {
+                                "JournalId": "coll_uc_dragstrip",
+                                "SlotId": "coll_uc_dragstrip_Slot_2",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_1",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "NoTyresAllowed"
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "QuickestTime100Race",
+                                    "EventID": 300807325,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            },
+                            "Race2": {
+                                "JournalId": "coll_uc_dragstrip",
+                                "SlotId": "coll_uc_dragstrip_Slot_3",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_1",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "NoBodyAllowed"
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "NormalRace",
+                                    "EventID": 300807326,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            }
+                        },
+                        "Day2": {
+                            "Race1": {
+                                "JournalId": "coll_r_am",
+                                "SlotId": "coll_r_am_Slot_5",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_1",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "NoIntakeAllowed"
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "NormalRace",
+                                    "EventID": 300807327,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            },
+                            "Race2": {
+                                "JournalId": "coll_r_am",
+                                "SlotId": "coll_r_am_Slot_6",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_1",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "NoTransmissionAllowed"
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "NormalRace",
+                                    "EventID": 300807328,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            }
+                        },
+                        "Day3": {
+                            "Race1": {
+                                "JournalId": "coll_e_lamborghinilimited",
+                                "SlotId": "coll_e_lamborghinilimited_Slot_5",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_2",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "EPRange",
+                                        "MinEP": 1600,
+                                        "MaxEP": 2000,
+                                        "AdaptiveRangeLevel": -1
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "NormalRace",
+                                    "EventID": 300807329,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            },
+                            "Race2": {
+                                "JournalId": "coll_e_lamborghinilimited",
+                                "SlotId": "coll_e_lamborghinilimited_Slot_6",
+                                "Multiplier": 2,
+                                "ParticipationMultiplier": 10,
+                                "RaceLeaderboardRewardId": "TournamentRace_2",
+                                "Restrictions": [
+                                    {
+                                        "RestrictionType": "NoEngineAllowed"
+                                    }
+                                ],
+                                "RaceEvent": {
+                                    "IsHalfMile": true,
+                                    "FuelCost": 1,
+                                    "TrackName": "TrackNurburgringNight",
+                                    "ECBRaceType": "NormalRace",
+                                    "EventID": 300807330,
+                                    "RaceReward": {
+                                        "CashPrize": 10000,
+                                        "RpPrize": 1000
+                                    },
+                                    "AdaptiveOpponentType": {
+                                    }
+                                },
+                                "RetriesPerCooldown": 3,
+                                "CooldownTime": 7200
+                            }
+                        }
+                    },
+                    "LeaderboardRewardId": "TournamentCrew",
+                    "MilestoneRewardId": "TournamentMilestoneRewards"
+                }
+            }
+        },
+        "GachaConfig": {
+            "HelpshiftURLs": [
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_A",
+                    "URL": "12744"
+                },
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_B",
+                    "URL": "12744"
+                },
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_C",
+                    "URL": "12744"
+                },
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_D",
+                    "URL": "12744"
+                },
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_E",
+                    "URL": "12744"
+                },
+                {
+                    "MachineID": "TOURNAMENTS_PARTS_GACHA_244_PARTS_F",
+                    "URL": "12744"
+                }
+            ]
+        },
+        "GachaRewardPools": {
+            "TOURNAMENTS_PARTS_GACHA_244_A_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Chevrolet_COPOCamaroRewardRecycled_2019",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_B_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Dodge_HPE1200DemonGold_2018",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_C_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "AstonMartin_ValhallaGold_2020",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_D_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "AstonMartin_DBSGTZagato_2020",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_E_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Lamborghini_Invencible_2023",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_F_Loyalty_reward": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Lamborghini_Veneno_2013",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_A_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_chevrolet",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_chevrolet",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_chevrolet",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Chevrolet_COPOCamaroRewardRecycled_2019",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_B_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_dodge",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_dodge",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_dodge",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Dodge_HPE1200DemonGold_2018",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_C_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "AstonMartin_ValhallaGold_2020",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_D_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_astonmartin",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "AstonMartin_DBSGTZagato_2020",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_E_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Lamborghini_Invencible_2023",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "TOURNAMENTS_PARTS_GACHA_244_F_Rewards": [
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 6200,
+                        "RewardInfo": {
+                            "partGrade": 1,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 2500,
+                        "RewardInfo": {
+                            "partGrade": 2,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 1000,
+                        "RewardInfo": {
+                            "partGrade": 3,
+                            "name": "id_lamborghini",
+                            "rewardType": 13
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "GeneratedInGame": true,
+                    "GeneratePartType": true,
+                    "RewardSpec": {
+                        "Chance": 200,
+                        "RewardInfo": {
+                            "name": "Lamborghini_Veneno_2013",
+                            "rewardType": 12
+                        }
+                    },
+                    "PresentInEventAssetBundle": false
+                }
+            ]
+        },
+        "GachaVariants": {
+            "VariantList": [
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_A",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "Chevrolet_COPOCamaroRewardRecycled_2019"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_A_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_A_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 1,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_B",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "Dodge_HPE1200DemonGold_2018"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_B_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_B_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 2,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_C",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "AstonMartin_ValhallaGold_2020"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_C_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_C_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 3,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_D",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "CostType": "IAP",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "AstonMartin_DBSGTZagato_2020"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_D_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_D_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 4,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_E",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "CostType": "IAP",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "Lamborghini_Invencible_2023"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_E_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_E_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 5,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_PARTS_F",
+                    "ScheduleIDList": [
+                        "TOURNAMENTS_PARTS_GACHA_244"
+                    ],
+                    "GachaType": "Event",
+                    "TabId": "TOURNAMENTS_PARTS_GACHA",
+                    "CostType": "IAP",
+                    "UnlockRequirements": {
+                        "CarList": [
+                            "Lamborghini_Veneno_2013"
+                        ],
+                        "LockMessage": "TEXT_GACHA_OWNERSHIP_RESTRICTION_POP_UP",
+                        "Tier": "INVALID"
+                    },
+                    "RewardSet": {
+                        "NumberPulls": 5,
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_F_Rewards",
+                        "AllowAllSameRarity": false,
+                        "MaxGrade3": 2,
+                        "MaxStage6": 1,
+                        "SwapDuplicateParts": true
+                    },
+                    "LoyaltyReward": {
+                        "id": "TOURNAMENTS_PARTS_GACHA_244_F_Loyalty",
+                        "contribution": 1
+                    },
+                    "UI": {
+                        "Position": 6,
+                        "RevealAnim": "Animation/Gacha/reveal_box",
+                        "MachinePrefab": "PresetGachaMachine",
+                        "TitleType": "Text",
+                        "TitleValue": "TEXT_COLLECTIONS_TOURNAMENT_TITLE",
+                        "ShowManufacturerForFusionParts": true,
+                        "TitleTexture": null
+                    },
+                    "PrefabPreset_Machine": "SHOWDOWN_PURPLE",
+                    "PrefabPreset_EventIndicator": "SHOWDOWN_PURPLE",
+                    "OverwriteScheduleUsingGroupName": false,
+                    "PushText": "TEXT_NOTIFICATIONS_GACHA_BRONZE_SPIN",
+                    "FreeSpinTime": {
+                        "Hours": 24,
+                        "Minutes": 0,
+                        "Seconds": 0
+                    },
+                    "StartTime": 0,
+                    "Duration": 0,
+                    "EventID_VisibleIfCompleted": 0,
+                    "EventID_HiddenIfCompleted": 0,
+                    "PresentInEventAssetBundle": false
+                }
+            ],
+            "LoyaltyRewardList": [
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_A_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_A_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                },
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_B_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_B_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                },
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_C_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_C_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                },
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_D_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_D_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                },
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_E_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_E_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                },
+                {
+                    "PresentInEventAssetBundle": false,
+                    "id": "TOURNAMENTS_PARTS_GACHA_244_F_Loyalty",
+                    "Text": "TEXT_FNF_GACHA_LOYALTY_BONUS",
+                    "PopUpBodyText": "TEXT_GACHA_LOYALTY_REWARD_GENERIC_BODY",
+                    "Steps": 7,
+                    "RewardSet": {
+                        "Rewards": "TOURNAMENTS_PARTS_GACHA_244_F_Loyalty_reward",
+                        "SwapDuplicateParts": true
+                    }
+                }
+            ]
+        },
+        "EventSchedule": {
+            "shouldProcessForDataCocooning": true,
+            "ShouldProcessForEventModularization": true,
+            "ScheduleList": [
+                {
+                    "id": "TOURNAMENT_244_DAY1",
+                    "ScheduleID": "TOURNAMENT_244_DAY1",
+                    "BasedOn_ScheduleID": "ALWAYS",
+                    "Time_ActiveBetweenAny": [
+                        [
+                            1751709600,
+                            1751796000
+                        ]
+                    ],
+                    "EventScheduleExperimentControls_ActiveIfAllTrue": [
+                        "ENABLE_TOURNAMENT_GACHA_SUPPORT"
+                    ],
+                    "ShouldShowDuringNewPlayerSeries": true
+                },
+                {
+                    "id": "TOURNAMENT_244_DAY2",
+                    "ScheduleID": "TOURNAMENT_244_DAY2",
+                    "BasedOn_ScheduleID": "ALWAYS",
+                    "Time_ActiveBetweenAny": [
+                        [
+                            1751796000,
+                            1751882400
+                        ]
+                    ],
+                    "EventScheduleExperimentControls_ActiveIfAllTrue": [
+                        "ENABLE_TOURNAMENT_GACHA_SUPPORT"
+                    ],
+                    "ShouldShowDuringNewPlayerSeries": true
+                },
+                {
+                    "id": "TOURNAMENT_244_DAY3",
+                    "ScheduleID": "TOURNAMENT_244_DAY3",
+                    "BasedOn_ScheduleID": "ALWAYS",
+                    "Time_ActiveBetweenAny": [
+                        [
+                            1751882400,
+                            1751968800
+                        ]
+                    ],
+                    "EventScheduleExperimentControls_ActiveIfAllTrue": [
+                        "ENABLE_TOURNAMENT_GACHA_SUPPORT"
+                    ],
+                    "ShouldShowDuringNewPlayerSeries": true
+                },
+                {
+                    "id": "TOURNAMENTS_PARTS_GACHA_244",
+                    "ScheduleID": "TOURNAMENTS_PARTS_GACHA_244",
+                    "BasedOn_ScheduleID": "ALWAYS",
+                    "Time_ActiveBetweenAny": [
+                        [
+                            1751709600,
+                            1751968800
+                        ]
+                    ],
+                    "EventScheduleExperimentControls_ActiveIfAllTrue": [
+                        "ENABLE_TOURNAMENT_GACHA_SUPPORT"
+                    ],
+                    "ShouldShowDuringNewPlayerSeries": true
+                }
+            ]
+        }
+    }
+}

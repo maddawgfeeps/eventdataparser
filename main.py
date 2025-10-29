@@ -6,17 +6,9 @@ import json
 import time
 import traceback
 from datetime import datetime
-from utils import debug_log, find_translation_file, build_translation_lookup, load_shop_time_gated_events, find_collection_file, build_collection_lookup
-from eventdataparser import EventDataParser
-from milestonedataparser import MilestoneDataParser
-from showdownparser import ShowdownParser
-from tournamentparser import TournamentParser
 import subprocess
 import importlib
-from colorama import init, Fore, Style
-import UnityPy
 
-init(autoreset=True)
 
 # Package installation for UnityPy
 required_packages = {
@@ -29,8 +21,20 @@ def install_if_missing(packages):
         try:
             importlib.import_module(import_name)
         except ImportError:
-            debug_log(f"Installing missing package: {pip_name}", "info")
+            print(f"Installing missing package: {pip_name}", "info")
             subprocess.check_call([sys.executable, "-m", "pip", "install", pip_name])
+
+install_if_missing(required_packages)
+            
+from colorama import init, Fore, Style
+import UnityPy  
+from utils import debug_log, find_translation_file, build_translation_lookup, load_shop_time_gated_events, find_collection_file, build_collection_lookup
+from eventdataparser import EventDataParser
+from milestonedataparser import MilestoneDataParser
+from showdownparser import ShowdownParser
+from tournamentparser import TournamentParser  
+
+init(autoreset=True)        
 
 def unpack_all_assets(source_folder: str, destination_folder: str):
     debug_log("Extracting Resources...", "info")
