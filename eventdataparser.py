@@ -234,6 +234,7 @@ class EventDataParser:
                         if rn and re.search(r"_GOLD_[A-Z]$", mach, re.IGNORECASE):
                             gold_rewards.append(rn)
             gold_rewards = list(dict.fromkeys(gold_rewards))
+            #debug_log(f"Gold Key Pullable Cars Found: {gold_rewards}", "Info")
 
             # Build event output
             pretty_title = translate_event_name(title, self.translations)
@@ -291,10 +292,10 @@ class EventDataParser:
                                 annotations.append(f"Winnable Race {wins_required}")
                                 break
 
-                        for gr in gold_rewards:
-                            if is_match(gr, model_raw) or is_match(model_raw, gr):
-                                annotations.append(f"{Fore.YELLOW}Pullable GK{Style.RESET_ALL}" if suffix_color else "Pullable GK")
-                                break
+                        # Fixed Gold Key detection — uses actual resolved model key from translation
+                        if any(is_match(gr, raw_id) or is_match(raw_id, gr) for gr in gold_rewards):
+                            gk_text = f"{Fore.YELLOW}Pullable GK{Style.RESET_ALL}" if suffix_color else "Pullable GK"
+                            annotations.append(gk_text)
 
                         for shop_key, entry in shop_map.items():
                             if is_match(shop_key, model_raw) or is_match(model_raw, shop_key):

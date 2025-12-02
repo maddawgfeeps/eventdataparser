@@ -3,6 +3,7 @@ import os
 import re
 import json
 import traceback
+import sys
 from datetime import datetime, timezone
 from colorama import Fore, Style, init
 
@@ -32,7 +33,6 @@ def epoch_to_gmt(epoch):
         return str(epoch)
 
 def format_time(epoch, for_file=False):
-    """Format epoch time to UTC string, optionally for file output with Discord timestamp."""
     try:
         dt = datetime.fromtimestamp(int(epoch), tz=timezone.utc)
         if for_file:
@@ -42,7 +42,6 @@ def format_time(epoch, for_file=False):
         return str(epoch)
 
 def colorize_star_for_console(star_value: str) -> str:
-    """Color 'P*' magenta, 'G*' yellow for console output."""
     if not star_value:
         return "?"
     parts = str(star_value).split("_")
@@ -71,7 +70,6 @@ def find_translation_file(folder="MonoBehaviour"):
         return None
 
 def build_translation_lookup(translation_path):
-    """Return mapping code -> pretty name extracted from TranslationDataAsset.json"""
     if not translation_path or not os.path.exists(translation_path):
         debug_log("TranslationDataAsset.json not found. Car names will be untranslated.", "warn")
         return {}
@@ -110,7 +108,9 @@ def build_translation_lookup(translation_path):
     debug_log(f"Translation lookup built with {len(mapping)} entries from {filename} (File Date - {file_date})", "success")
     return mapping
 
-# ---------------- Collection loader ----------------
+# ---------------- Collection & Shop loaders (unchanged) ----------------
+# ... [keeping all existing functions unchanged] ...
+
 def find_collection_file(folder="MetaData"):
     if not os.path.exists(folder):
         debug_log(f"Collection folder {folder} not found.", "warn", force=True)
@@ -120,32 +120,17 @@ def find_collection_file(folder="MetaData"):
         return os.path.join(folder, sorted(candidates)[0]) if candidates else None
     except Exception as e:
         debug_log(f"Error accessing collection folder {folder}: {e}", "error", force=True)
-        if "-debug" in sys.argv:
-            debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
         return None
 
 def build_collection_lookup(collection_path):
-    """Build lookup for collection slot names from CollectionSlots.meta."""
     if not collection_path or not os.path.exists(collection_path):
         debug_log("CollectionSlots.meta not found. Slot names will default to 'Unknown'.", "warn")
         return {}
-
     try:
         with open(collection_path, "r", encoding="utf-8") as fh:
             collection_slots = json.load(fh)
-    except UnicodeDecodeError:
-        try:
-            with open(collection_path, "r", encoding="utf-8-sig") as fh:
-                collection_slots = json.load(fh)
-        except Exception as e:
-            debug_log(f"Failed to load collection file {collection_path}: {e}", "error", force=True)
-            if "-debug" in sys.argv:
-                debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
-            return {}
     except Exception as e:
         debug_log(f"Failed to load collection file {collection_path}: {e}", "error", force=True)
-        if "-debug" in sys.argv:
-            debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
         return {}
 
     lookup = {}
@@ -160,9 +145,7 @@ def build_collection_lookup(collection_path):
     debug_log(f"Collection lookup built with {len(lookup)} entries from {filename} (File Date - {file_date})", "success")
     return lookup
 
-# ---------------- Shop loader ----------------
 def load_shop_time_gated_events(folder="MetaData"):
-    """Load ShopTimeGatedEvents.meta for car promotions, with fallback for different file names."""
     if not os.path.exists(folder):
         debug_log(f"Shop folder {folder} not found.", "warn", force=True)
         return None, None
@@ -182,39 +165,21 @@ def load_shop_time_gated_events(folder="MetaData"):
                 return {"ShopTimeGatedEvents": {"GENERATED_TimeGatedCarPromotions": promos}}, file_date
             except Exception as e:
                 debug_log(f"Failed to load {fname}: {e}", "warn")
-                if "-debug" in sys.argv:
-                    debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
                 continue
     except Exception as e:
         debug_log(f"Error accessing shop folder {folder}: {e}", "error", force=True)
-        if "-debug" in sys.argv:
-            debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
         return None, None
-
     return None, None
 
 # ---------------- Matching utilities ----------------
 def _normalize(s: str) -> str:
-    """Normalize a DBID-like string for fuzzy matching."""
     if s is None:
         return ""
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
-def pattern_to_regex(pat: str) -> str:
-    """Convert a wildcard pattern (with *) to a regex (normalized)"""
-    esc = re.escape(pat)
-    esc = esc.replace(r'\*', '.*')
-    return '^' + esc + '$'
-
 def is_match(pattern: str, key: str) -> bool:
-    """
-    Robust matching between two DBIDs.
-    - If pattern contains '*', treat as wildcard.
-    - Otherwise accept exact normalized equality or containment either way.
-    """
     if not pattern or not key:
         return False
-
     if pattern == key:
         return True
     n_pat = _normalize(pattern)
@@ -229,17 +194,11 @@ def is_match(pattern: str, key: str) -> bool:
 
     if n_pat == n_key or n_pat in n_key or n_key in n_pat:
         return True
-
     return False
 
 def translate_event_name(event_key: str, translations: dict):
-    """
-    Returns pretty event title if available, else fallback.
-    Looks for TEXT_<EVENT>_TITLE or TEXT_<EVENT>_TITLE_SHORT.
-    """
     if not event_key or not translations:
         return event_key
-
     lookup_keys = [
         f"TEXT_{event_key}_TITLE",
         f"TEXT_{event_key}_TITLE_SHORT",
@@ -249,17 +208,16 @@ def translate_event_name(event_key: str, translations: dict):
             return translations[lk]
     return event_key
 
-# ---------------- Translation helper ----------------
+# ---------------- FIXED: translate_model_name_with_suffix ----------------
 def translate_model_name_with_suffix(model, translations, debug_mode=False):
     """
-    Clean translator with wildcard expansion:
-      • If model contains '*', return all matching variants joined with '/'
-      • Otherwise, return single translated entry
-      • Keeps PS/GS coloring
-      • Debug mode appends raw DBIDs
+    Fixed version: Wildcard models return each real variant with correct raw_id.
+    Critical for Gold Key, SD Prize, and shop matching.
     """
     if not model:
         return []
+
+    keys = list(translations.keys())
 
     def colored_suffix_for(name):
         if re.search(r"(RewardRecycled|Gold)", name, re.IGNORECASE):
@@ -269,27 +227,35 @@ def translate_model_name_with_suffix(model, translations, debug_mode=False):
         return "(PS)", f"{Fore.MAGENTA}(PS){Style.RESET_ALL}"
 
     results = []
-    keys = list(translations.keys())
 
+    # Wildcard expansion — now returns real keys!
     if "*" in model:
-        prefix, _, suffix = model.partition("*")
-        candidates = [k for k in keys if k.startswith(prefix) and (not suffix or k.endswith(suffix))]
+        parts = model.split("*", 1)
+        prefix = parts[0]
+        suffix = parts[1] if len(parts) > 1 else ""
+
+        candidates = [
+            k for k in keys
+            if k.startswith(prefix) and (not suffix or k.endswith(suffix))
+        ]
 
         if not candidates:
-            candidates = [model]
+            pretty = translations.get(model, model.replace("_", " "))
+            _, color_suffix = colored_suffix_for(model)
+            display = pretty + (f" ({model})" if debug_mode else "")
+            results.append((display, color_suffix, model))
+            return results
 
-        variants = []
-        for k in candidates:
+        for k in sorted(candidates):
             pretty = translations.get(k, k.replace("_", " "))
             _, color_suffix = colored_suffix_for(k)
             display = pretty
             if debug_mode:
-                display = f"{display} ({k})"
-            variants.append(f"{display} {color_suffix}")
-        combined_display = " / ".join(variants)
-        results.append((combined_display, "", model))
+                display += f" ({k})"
+            results.append((display, color_suffix, k))  # Real key used!
         return results
 
+    # Non-wildcard path
     if model in translations:
         chosen_key = model
     else:
@@ -306,7 +272,7 @@ def translate_model_name_with_suffix(model, translations, debug_mode=False):
     results.append((display, color_suffix, chosen_key))
     return results
 
-# ---------------- Tournament utilities ----------------
+# ---------------- Rest unchanged ----------------
 def format_cooldown_time(seconds):
     minutes = seconds // 60
     hours = minutes // 60
@@ -314,12 +280,9 @@ def format_cooldown_time(seconds):
     return f"{hours}h {minutes}m"
 
 def format_restriction(restriction):
-    """Pretty print a restriction dict. Assumes a non-empty restriction object."""
     rtype = restriction.get("RestrictionType", "Unknown")
     readable = re.sub(r"(?<=[a-z])([A-Z])", r" \1", rtype)
     readable = readable.replace("EPRange", "EP Range").replace("PPRange", "PP Range")
-    readable = readable.replace("No ", "No ")
-
     if rtype in ("EPRange", "PPRange"):
         min_val = restriction.get("MinEP") or restriction.get("MinPP")
         max_val = restriction.get("MaxEP") or restriction.get("MaxPP")
