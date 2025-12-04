@@ -181,4 +181,5 @@ cython_debug/
 .cursorindexingignore
 
 #CSR2 files
-assets_client_*/
+assets_client_*
+allparser_output.txt
