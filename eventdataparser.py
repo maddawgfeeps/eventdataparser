@@ -231,10 +231,15 @@ class EventDataParser:
             if self.shop_data:
                 promos = self.shop_data.get("ShopTimeGatedEvents", {}).get("GENERATED_TimeGatedCarPromotions", {})
                 for car_name, entries in promos.items():
-                    for entry in entries:
-                        if title in (entry.get("ScheduleIDList") or []):
-                            shop_map.setdefault(car_name, entry)
-                            break
+                    if not isinstance(entries, list):
+                        continue
+                    matching_entries = [
+                        entry for entry in entries
+                        if title in (entry.get("ScheduleIDList") or [])
+                    ]
+                    if matching_entries:
+                        # Keep ALL matching entries for this car during this event
+                        shop_map[car_name] = matching_entries  # ← Now a LIST, not a single dict
 
             gold_rewards = []
             for gacha in event.get("GachaEventsCalendar", {}).get("GachaEvents", []):
@@ -308,16 +313,40 @@ class EventDataParser:
                             gk_text = f"{Fore.YELLOW}Pullable GK{Style.RESET_ALL}" if suffix_color else "Pullable GK"
                             annotations.append(gk_text)
 
-                        for shop_key, entry in shop_map.items():
-                            if is_match(shop_key, model_raw) or is_match(model_raw, shop_key):
-                                code = entry.get("csrProductReward_RewardType") or entry.get("rewardType")
-                                qty = entry.get("quantity")
-                                friendly = {"HC": f"{Fore.YELLOW}Gold Coins{Style.RESET_ALL}" if suffix_color else "Gold Coins"}.get(code, code)
-                                if qty:
-                                    annotations.append(f"{Fore.YELLOW}{qty} Gold Coins{Style.RESET_ALL}" if suffix_color else f"{qty} Gold Coins")
-                                else:
-                                    annotations.append(f"{friendly}")
-                                break
+
+                        shop_annotations = []
+
+                        for shop_key, entries in shop_map.items():
+                            if not isinstance(entries, list):
+                                entries = [entries]
+
+                            # raw_id is the actual car DB key returned by translate_model_name_with_suffix()
+                            # model_raw is the original key from the lock-in (might be a wildcard or old name)
+                            check_keys = [raw_id]
+                            if raw_id != model_raw:
+                                check_keys.append(model_raw)
+
+                            for entry in entries:
+                                if any(is_match(shop_key, ck) or is_match(ck, shop_key) for ck in check_keys):
+                                    qty = entry.get("quantity", 0)
+                                    if qty == 0:
+                                        shop_text = "0 Gold Coins"          # Free offer
+                                    else:
+                                        shop_text = f"{qty} Gold Coins"
+
+                                    colored = f"{Fore.YELLOW}{shop_text}{Style.RESET_ALL}"
+                                    shop_annotations.append(colored)
+
+                        # Deduplicate identical annotations
+                        if shop_annotations:
+                            seen = set()
+                            unique = []
+                            for ann in shop_annotations:
+                                plain = re.sub(r'\x1b\[[0-9;]*m', '', ann)  # strip colour codes
+                                if plain not in seen:
+                                    seen.add(plain)
+                                    unique.append(ann)
+                            annotations.extend(unique)
 
                         # Add SD prize annotation
                         for sd_name, thresh in sd_prizes.items():
