@@ -44,8 +44,13 @@ def unpack_all_assets(source_folder: str, destination_folder: str):
     
     try:
         for root, dirs, files in os.walk(source_folder):
-            if debug_mode:
-                debug_log(f"Walking through: {source_folder}", "debug")
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__'}]
+            # Only log real directories that contain ASTC files
+            if debug_mode and any("ASTC" in f.upper() for f in files):
+                rel_path = os.path.relpath(root, source_folder)
+                if rel_path == ".":
+                    rel_path = "."
+                debug_log(f"Scanning directory: {rel_path}", "debug")
             for file_name in files:
                 if "ASTC" not in file_name:
                     continue
@@ -149,6 +154,33 @@ def main():
     start_time = time.time()
     debug_log("Starting CSR2 EventData Parser.", "info", force=True)
     folder = "."
+       
+    base_dir2 = os.getcwd()  # <-- wherever you run python main.py from
+
+    cleanup_items = [
+        "TextAsset",
+        "MonoBehaviour",
+        "Texture2D",
+        "Sprite",
+        "__pycache__",
+        "allparser_output.txt",
+         # optional: delete entire extracted folder if present
+    ]
+
+    for item in cleanup_items:
+        path = os.path.join(base_dir2, item)
+        if not os.path.exists(path):
+            continue
+        try:
+            if os.path.isfile(path):
+                os.remove(path)
+                debug_log(f"Deleted old file: {item}", "info")
+            else:
+                import shutil
+                shutil.rmtree(path)
+                debug_log(f"Deleted old folder: {item}", "info")
+        except Exception as e:
+            debug_log(f"Failed to delete {item}: {e}", "warn")
     
     # Count ASTC files before extraction
     astc_count = sum(1 for root, _, files in os.walk(folder) for file_name in files if "ASTC" in file_name)
@@ -172,7 +204,7 @@ def main():
             debug_log(f"Stack trace: {traceback.format_exc()}", "debug", force=True)
     
     # Define subfolders
-    meta_dir = os.path.join(folder, "MetaData")
+    meta_dir = os.path.join(folder, "metadata")
     text_dir = os.path.join(folder, "TextAsset")
     mono_dir = os.path.join(folder, "MonoBehaviour")
     

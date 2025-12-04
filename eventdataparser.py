@@ -68,8 +68,8 @@ class EventDataParser:
     def process(self):
         events_data = []  # List to store event data for sorting
         files = sorted([f for f in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, f)) and f.lower().endswith(".txt")])
-        sd_files = [f for f in files if "_sd" in f.lower()]
-        
+        sd_files = [f for f in files if "_sd" in f.lower() or f.lower().endswith("_bs.txt")]
+        #print([sd_files])
         for filename in files:
             if "_sd" in filename.lower() or "smp_showdown_" in filename.lower():
                 if self.debug:
@@ -78,7 +78,12 @@ class EventDataParser:
             if "tournament_" in filename.lower():
                 if self.debug:
                     debug_log(f"Skipping {filename} (Tournament variant)", "debug")
-                continue
+                continue                
+            # Skip bespoke showdowns
+            if filename.lower().endswith("_bs.txt"):
+                if self.debug:
+                    debug_log(f"Skipping {filename} (Bespoke Showdown variant)", "debug")
+                continue            
 
             path = os.path.join(self.folder, filename)
             try:
@@ -120,14 +125,20 @@ class EventDataParser:
                 except Exception:
                     pass
 
-            # Find matching _SD file
+            # Find matching _SD or _BS file
             sd_prizes = {}
             sd_event_name = None
-            norm_year = title.split("_")[-1] if "_" in title else "2025"
-            norm_title = re.sub(r'[_ ]', '', title.lower()).replace(norm_year.lower(), "")
+            norm_year = title.split("_")[-1] if "_" in title and title.split("_")[-1].isdigit() else ""
+            norm_title = re.sub(r'[_ ]', '', title.lower())
+            if norm_year:
+                norm_title = norm_title.replace(norm_year.lower(), "")
+
             matching_sd_file = None
             for sd_file in sd_files:
-                norm_sd = re.sub(r'[_ ]', '', sd_file.lower()).replace("sd" + norm_year.lower() + ".txt", "")
+                # Extract base name
+                norm_sd = re.sub(r'[_ ](sd|bs)[0-9]*\.txt$|_?[0-9]{4}\.txt$', '', sd_file, flags=re.IGNORECASE)
+                norm_sd = re.sub(r'[_ ]', '', norm_sd.lower())
+                
                 if norm_sd == norm_title:
                     matching_sd_file = sd_file
                     break
