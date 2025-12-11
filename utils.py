@@ -108,8 +108,7 @@ def build_translation_lookup(translation_path):
     debug_log(f"Translation lookup built with {len(mapping)} entries from {filename} (File Date - {file_date})", "success")
     return mapping
 
-# ---------------- Collection & Shop loaders (unchanged) ----------------
-# ... [keeping all existing functions unchanged] ...
+# ---------------- Collection & Shop loaders ----------------
 
 def find_collection_file(folder="MetaData"):
     if not os.path.exists(folder):
@@ -208,12 +207,9 @@ def translate_event_name(event_key: str, translations: dict):
             return translations[lk]
     return event_key
 
-# ---------------- FIXED: translate_model_name_with_suffix ----------------
+# ---------------- translate_model_name_with_suffix ----------------
 def translate_model_name_with_suffix(model, translations, debug_mode=False):
-    """
-    Fixed version: Wildcard models return each real variant with correct raw_id.
-    Critical for Gold Key, SD Prize, and shop matching.
-    """
+
     if not model:
         return []
 
@@ -228,7 +224,6 @@ def translate_model_name_with_suffix(model, translations, debug_mode=False):
 
     results = []
 
-    # Wildcard expansion — now returns real keys!
     if "*" in model:
         parts = model.split("*", 1)
         prefix = parts[0]
@@ -252,10 +247,10 @@ def translate_model_name_with_suffix(model, translations, debug_mode=False):
             display = pretty
             if debug_mode:
                 display += f" ({k})"
-            results.append((display, color_suffix, k))  # Real key used!
+            results.append((display, color_suffix, k)) 
         return results
 
-    # Non-wildcard path
+
     if model in translations:
         chosen_key = model
     else:
@@ -272,7 +267,7 @@ def translate_model_name_with_suffix(model, translations, debug_mode=False):
     results.append((display, color_suffix, chosen_key))
     return results
 
-# ---------------- Rest unchanged ----------------
+
 def format_cooldown_time(seconds):
     minutes = seconds // 60
     hours = minutes // 60
@@ -283,12 +278,20 @@ def format_restriction(restriction):
     rtype = restriction.get("RestrictionType", "Unknown")
     readable = re.sub(r"(?<=[a-z])([A-Z])", r" \1", rtype)
     readable = readable.replace("EPRange", "EP Range").replace("PPRange", "PP Range")
+
     if rtype in ("EPRange", "PPRange"):
-        min_val = restriction.get("MinEP") or restriction.get("MinPP")
-        max_val = restriction.get("MaxEP") or restriction.get("MaxPP")
+        if rtype == "EPRange":
+            min_val = restriction.get("MinEP")
+            max_val = restriction.get("MaxEP")
+        else:
+            min_val = restriction.get("MinPP")
+            max_val = restriction.get("MaxPP")
+
         if min_val is not None and max_val is not None:
             readable += f" {min_val} - {max_val}"
+
     return readable
+
 
 def format_distance(race_event):
     if race_event.get("ECBRaceType") == "QuickestTime100Race":
