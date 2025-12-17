@@ -41,61 +41,49 @@ def unpack_all_assets(source_folder: str, destination_folder: str):
     astc_count = 0
     failed_files = 0
     debug_mode = "-debug" in sys.argv
-    
+
     try:
         for root, dirs, files in os.walk(source_folder):
             dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__'}]
-            # Only log real directories that contain ASTC files
             if debug_mode and any("ASTC" in f.upper() for f in files):
                 rel_path = os.path.relpath(root, source_folder)
                 if rel_path == ".":
                     rel_path = "."
                 debug_log(f"Scanning directory: {rel_path}", "debug")
+
             for file_name in files:
                 if "ASTC" not in file_name:
                     continue
-                    
+
                 astc_count += 1
+                file_path = os.path.join(root, file_name)
                 if debug_mode:
                     debug_log(f"Processing File: {file_name}", "debug")
-                file_path = os.path.join(root, file_name)
-                
+
                 try:
                     env = UnityPy.load(file_path)
                     file_name_lower = file_name.lower()
                     extract_resources = "resources" in file_name_lower
                     extract_metadata = "metadata" in file_name_lower
 
+                    # --- Texture2D and Sprite extraction (unchanged) ---
                     if extract_resources or not (extract_resources or extract_metadata):
                         for path, obj in env.container.items():
-                            if obj.type.name == "Texture2D":
+                            if obj.type.name in ["Texture2D", "Sprite"]:
                                 try:
                                     data = obj.read()
+                                    folder_name = obj.type.name
                                     filename = os.path.basename(path).upper()
-                                    dest = os.path.join(destination_folder, "Texture2D", filename)
+                                    dest = os.path.join(destination_folder, folder_name, filename)
                                     os.makedirs(os.path.dirname(dest), exist_ok=True)
-                                    dest, ext = os.path.splitext(dest)
-                                    dest = dest + ".png"
+                                    dest = os.path.splitext(dest)[0] + ".png"
                                     if debug_mode:
-                                        debug_log(f"Writing Texture2D to: {dest}", "debug")
+                                        debug_log(f"Writing {obj.type.name} to: {dest}", "debug")
                                     data.image.save(dest)
                                 except Exception as e:
-                                    debug_log(f"Error writing Texture2D {path}: {e}", "error")
+                                    debug_log(f"Error writing {obj.type.name} {path}: {e}", "error")
 
-                            if obj.type.name == "Sprite":
-                                try:
-                                    data = obj.read()
-                                    filename = os.path.basename(path).upper()
-                                    dest = os.path.join(destination_folder, "Sprite", filename)
-                                    os.makedirs(os.path.dirname(dest), exist_ok=True)
-                                    dest, ext = os.path.splitext(dest)
-                                    dest = dest + ".png"
-                                    if debug_mode:
-                                        debug_log(f"Writing Sprite to: {dest}", "debug")
-                                    data.image.save(dest)
-                                except Exception as e:
-                                    debug_log(f"Error writing Sprite {path}: {e}", "error")
-
+                    # --- TextAsset extraction (unchanged) ---
                     if extract_metadata or not (extract_resources or extract_metadata):
                         for path, obj in env.container.items():
                             if obj.type.name == "TextAsset":
@@ -104,45 +92,73 @@ def unpack_all_assets(source_folder: str, destination_folder: str):
                                     filename = os.path.basename(path).upper()
                                     dest = os.path.join(destination_folder, "TextAsset", filename)
                                     os.makedirs(os.path.dirname(dest), exist_ok=True)
-                                    dest, ext = os.path.splitext(dest)
-                                    dest = dest + ".txt"
+                                    dest = os.path.splitext(dest)[0] + ".txt"
                                     if debug_mode:
                                         debug_log(f"Writing TextAsset to: {dest}", "debug")
                                     with open(dest, 'w', encoding='utf-8', errors='surrogatepass') as f:
                                         f.write(str(data.m_Script))
-                                except UnicodeEncodeError as e:
-                                    debug_log(f"Unicode error writing TextAsset {path}: {e}. Retrying with replacement characters", "error")
-                                    try:
-                                        with open(dest, 'w', encoding='utf-8', errors='replace') as f:
-                                            f.write(str(data.m_Script))
-                                        if debug_mode:
-                                            debug_log(f"Successfully wrote TextAsset with replacements to: {dest}", "debug")
-                                    except Exception as e2:
-                                        debug_log(f"Failed to write TextAsset {path} with replacements: {e2}", "error")
                                 except Exception as e:
                                     debug_log(f"Error writing TextAsset {path}: {e}", "error")
 
+                    # --- MonoBehaviour extraction: ONE FILE PER BUNDLE (FIXED) ---
                     if not (extract_resources or extract_metadata):
+                        all_mono = []
+
+                        # Get clean bundle name
+                        bundle_base_name = os.path.splitext(file_name)[0]  # Remove extension
+                        if "." in bundle_base_name:
+                            bundle_base_name = bundle_base_name.split('.')[0]  # Remove .ASTC.xxx suffix
+
+                        is_camera_anim_bundle = bundle_base_name == "CarCameraAnimationLibrary"
+
                         for obj in env.objects:
                             if obj.type.name == "MonoBehaviour":
                                 try:
-                                    if obj.serialized_type.nodes:
+                                    if obj.serialized_type and obj.serialized_type.nodes:
                                         tree = obj.read_typetree()
-                                        filename = tree.get('m_Name', f"MONO_{obj.path_id}")
-                                        dest = os.path.join(destination_folder, "MonoBehaviour", f"{filename}.json")
-                                        os.makedirs(os.path.dirname(dest), exist_ok=True)
-                                        if debug_mode:
-                                            debug_log(f"Writing MonoBehaviour to: {dest}", "debug")
-                                        with open(dest, 'w', encoding='utf-8') as f:
-                                            json.dump(tree, f, ensure_ascii=False, indent=4)
-                                    else:
-                                        debug_log(f"Skipping MonoBehaviour {obj.path_id}: no typetree nodes", "warn")
+                                        m_name = tree.get("m_Name", "")
+                                        # Add size for smart selection
+                                        tree_str = json.dumps(tree)
+                                        size = len(tree_str)
+                                        all_mono.append((tree, m_name, size, obj.path_id))
                                 except Exception as e:
-                                    debug_log(f"Error processing MonoBehaviour {obj.path_id}: {e}", "error")
+                                    debug_log(f"Error reading MonoBehaviour {obj.path_id}: {e}", "error")
+
+                        if all_mono:
+                            if is_camera_anim_bundle:
+                                # Prefer one with matching name, else largest
+                                named_match = [item for item in all_mono if item[1] == bundle_base_name]
+                                if named_match:
+                                    selected = named_match[0][0]  # tree
+                                else:
+                                    selected = max(all_mono, key=lambda x: x[2])[0]  # largest by size
+                                mono_to_save = [selected]
+
+                                debug_log(f"Saved 1 MonoBehaviour (filtered main library) → {bundle_base_name}.json", "info")
+                                if named_match:
+                                    debug_log(f"  → Selected by name: '{bundle_base_name}'", "debug")
+                                else:
+                                    debug_log(f"  → Selected largest (size ~{max(all_mono, key=lambda x: x[2])[2]} chars)", "debug")
+                            else:
+                                # Save all for other bundles
+                                mono_to_save = [item[0] for item in all_mono]
+                                debug_log(f"Saved {len(mono_to_save)} MonoBehaviour(s) → {bundle_base_name}.json", "info")
+
+                            # Write the output
+                            out_path = os.path.join(destination_folder, "MonoBehaviour", f"{bundle_base_name}.json")
+                            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+                            with open(out_path, 'w', encoding='utf-8') as f:
+                                if len(mono_to_save) == 1:
+                                    json.dump(mono_to_save[0], f, ensure_ascii=False, indent=4)
+                                else:
+                                    json.dump(mono_to_save, f, ensure_ascii=False, indent=4)
 
                 except Exception as e:
                     failed_files += 1
                     debug_log(f"Error processing file {file_name}: {e}", "error")
+                    if debug_mode:
+                        debug_log(f"Stack trace: {traceback.format_exc()}", "debug")
 
     except FileNotFoundError as e:
         debug_log(f"Source folder {source_folder} not found: {e}", "error", force=True)
@@ -208,24 +224,55 @@ def main():
     text_dir = os.path.join(folder, "TextAsset")
     mono_dir = os.path.join(folder, "MonoBehaviour")
     
-    # File checks with error handling
+    # Initialize required_files dictionary
     required_files = {}
-    try:
-        required_files["TranslationDataAsset"] = find_translation_file(mono_dir)
-        translations = build_translation_lookup(required_files["TranslationDataAsset"]) if required_files["TranslationDataAsset"] else {}
-        if required_files["TranslationDataAsset"] and translations:
+    
+    # --- TranslationDataAsset lookup (supports old + new naming) ---
+    required_files["TranslationDataAsset"] = None
+    translations = {}
+
+    if os.path.exists(mono_dir):
+        possible_names = [
+            "Localisation_EN.json",           # New name (current)
+            "Localisation_en.json",           # Possible lowercase variant
+            "Localisation.json",
+            "TranslationDataAsset.json",      # Old name (legacy)
+            "TranslationData.json",
+        ]
+
+        for filename in os.listdir(mono_dir):
+            if filename in possible_names:
+                required_files["TranslationDataAsset"] = os.path.join(mono_dir, filename)
+                break
+
+        # Optional: fallback to any file containing "localisation" or "translation"
+        if not required_files["TranslationDataAsset"]:
+            for filename in os.listdir(mono_dir):
+                if filename.endswith(".json") and ("localisation" in filename.lower() or "translation" in filename.lower()):
+                    required_files["TranslationDataAsset"] = os.path.join(mono_dir, filename)
+                    debug_log(f"Found possible translation file via fuzzy match: {filename}", "info")
+                    break
+
+        if required_files["TranslationDataAsset"]:
             try:
-                file_date = datetime.fromtimestamp(os.path.getmtime(required_files["TranslationDataAsset"])).strftime("%Y/%m/%d")
-                debug_log(f"TranslationDataAsset file found, Translation lookup built with {len(translations)} entries from {os.path.basename(required_files['TranslationDataAsset'])} (File Date - {file_date})", "success")
+                translations = build_translation_lookup(required_files["TranslationDataAsset"])
+                if translations:
+                    file_date = datetime.fromtimestamp(os.path.getmtime(required_files["TranslationDataAsset"])).strftime("%Y/%m/%d")
+                    debug_log(
+                        f"Translation file loaded: {os.path.basename(required_files['TranslationDataAsset'])} "
+                        f"with {len(translations)} entries (File Date - {file_date})",
+                        "success"
+                    )
+                else:
+                    debug_log(f"Translation file found but lookup failed to build: {os.path.basename(required_files['TranslationDataAsset'])}", "warn")
+                    translations = {}
             except Exception as e:
-                debug_log(f"Error accessing TranslationDataAsset file {required_files['TranslationDataAsset']}: {e}", "error", force=True)
+                debug_log(f"Error loading translation file {required_files['TranslationDataAsset']}: {e}", "error", force=True)
+                translations = {}
         else:
-            debug_log("TranslationDataAsset file(s) not found or failed to build translation lookup.", "warn")
-            translations = {}
-    except FileNotFoundError:
-        debug_log(f"MonoBehaviour folder {mono_dir} not found. Skipping TranslationDataAsset.", "warn", force=True)
-        required_files["TranslationDataAsset"] = None
-        translations = {}
+            debug_log("No translation file found (tried Localisation_EN.json, TranslationDataAsset.json, etc.)", "warn")
+    else:
+        debug_log(f"MonoBehaviour folder {mono_dir} not found. Skipping translation lookup.", "warn", force=True)
     
     try:
         required_files["ShopTimeGatedEvents"] = [
