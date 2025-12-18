@@ -69,7 +69,6 @@ class EventDataParser:
         events_data = []  # List to store event data for sorting
         files = sorted([f for f in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, f)) and f.lower().endswith(".txt")])
         sd_files = [f for f in files if "_sd" in f.lower() or f.lower().endswith("_bs.txt")]
-        #print([sd_files])
         for filename in files:
             if "_sd" in filename.lower() or "smp_showdown_" in filename.lower():
                 if self.debug:
@@ -79,7 +78,6 @@ class EventDataParser:
                 if self.debug:
                     debug_log(f"Skipping {filename} (Tournament variant)", "debug")
                 continue                
-            # Skip bespoke showdowns
             if filename.lower().endswith("_bs.txt"):
                 if self.debug:
                     debug_log(f"Skipping {filename} (Bespoke Showdown variant)", "debug")
@@ -112,11 +110,9 @@ class EventDataParser:
             event = data[title]
             debug_log(f"Processing {title}", "info")
 
-            # Initialize lists for this event's output
             console_lines = []
             file_lines = []
 
-            # Extract schedule
             schedule = event.get("EventSchedule", {}).get("ScheduleList", [])
             start_epoch = end_epoch = None
             if schedule and isinstance(schedule, list) and "Time_ActiveBetweenAny" in schedule[0]:
@@ -125,7 +121,6 @@ class EventDataParser:
                 except Exception:
                     pass
 
-            # Find matching _SD or _BS file
             sd_prizes = {}
             sd_event_name = None
             norm_year = title.split("_")[-1] if "_" in title and title.split("_")[-1].isdigit() else ""
@@ -135,10 +130,8 @@ class EventDataParser:
 
             matching_sd_file = None
             for sd_file in sd_files:
-                # Extract base name
                 norm_sd = re.sub(r'[_ ](sd|bs)[0-9]*\.txt$|_?[0-9]{4}\.txt$', '', sd_file, flags=re.IGNORECASE)
                 norm_sd = re.sub(r'[_ ]', '', norm_sd.lower())
-                
                 if norm_sd == norm_title:
                     matching_sd_file = sd_file
                     break
@@ -166,7 +159,6 @@ class EventDataParser:
                 except Exception as e:
                     debug_log(f"Failed to process SD file {matching_sd_file}: {e}", "error")
 
-            # Process lockins (unchanged)
             lockins = event.get("LockinNamespaces", {}).get("Namespaces", {}).get(title, {}).get("LockinSlotsList", [])
             slot_models = {}
             for entry in lockins:
@@ -238,8 +230,7 @@ class EventDataParser:
                         if title in (entry.get("ScheduleIDList") or [])
                     ]
                     if matching_entries:
-                        # Keep ALL matching entries for this car during this event
-                        shop_map[car_name] = matching_entries  # ← Now a LIST, not a single dict
+                        shop_map[car_name] = matching_entries
 
             gold_rewards = []
             for gacha in event.get("GachaEventsCalendar", {}).get("GachaEvents", []):
@@ -250,9 +241,7 @@ class EventDataParser:
                         if rn and re.search(r"_GOLD_[A-Z]$", mach, re.IGNORECASE):
                             gold_rewards.append(rn)
             gold_rewards = list(dict.fromkeys(gold_rewards))
-            #debug_log(f"Gold Key Pullable Cars Found: {gold_rewards}", "Info")
 
-            # Build event output
             pretty_title = translate_event_name(title, self.translations)
             if pretty_title != title:
                 console_lines.append(f"{Fore.CYAN}{pretty_title}{Style.RESET_ALL} ({title})")
@@ -308,47 +297,34 @@ class EventDataParser:
                                 annotations.append(f"Winnable Race {wins_required}")
                                 break
 
-                        # Fixed Gold Key detection — uses actual resolved model key from translation
                         if any(is_match(gr, raw_id) or is_match(raw_id, gr) for gr in gold_rewards):
                             gk_text = f"{Fore.YELLOW}Pullable GK{Style.RESET_ALL}" if suffix_color else "Pullable GK"
                             annotations.append(gk_text)
 
-
                         shop_annotations = []
-
                         for shop_key, entries in shop_map.items():
                             if not isinstance(entries, list):
                                 entries = [entries]
-
-                            # raw_id is the actual car DB key returned by translate_model_name_with_suffix()
-                            # model_raw is the original key from the lock-in (might be a wildcard or old name)
                             check_keys = [raw_id]
                             if raw_id != model_raw:
                                 check_keys.append(model_raw)
-
                             for entry in entries:
                                 if any(is_match(shop_key, ck) or is_match(ck, shop_key) for ck in check_keys):
                                     qty = entry.get("quantity", 0)
-                                    if qty == 0:
-                                        shop_text = "0 Gold Coins"          # Free offer
-                                    else:
-                                        shop_text = f"{qty} Gold Coins"
-
+                                    shop_text = "0 Gold Coins" if qty == 0 else f"{qty} Gold Coins"
                                     colored = f"{Fore.YELLOW}{shop_text}{Style.RESET_ALL}"
                                     shop_annotations.append(colored)
 
-                        # Deduplicate identical annotations
                         if shop_annotations:
                             seen = set()
                             unique = []
                             for ann in shop_annotations:
-                                plain = re.sub(r'\x1b\[[0-9;]*m', '', ann)  # strip colour codes
+                                plain = re.sub(r'\x1b\[[0-9;]*m', '', ann)
                                 if plain not in seen:
                                     seen.add(plain)
                                     unique.append(ann)
                             annotations.extend(unique)
 
-                        # Add SD prize annotation
                         for sd_name, thresh in sd_prizes.items():
                             if is_match(sd_name, model_raw) or is_match(model_raw, sd_name):
                                 sd_text = f"{sd_event_name} {thresh} SD Prize Car"
@@ -356,54 +332,89 @@ class EventDataParser:
                                 annotations.append(console_sd_text)
                                 break
 
+                        # REMOVED: No more "CRDB: ..." annotation on regular cars
+
+                        bullet_console = "- "
+                        bullet_file = "- "
+
                         if annotations:
-                            console_lines.append(f"{console_display} - {' / '.join(annotations)}")
-                            file_lines.append(f"{file_display} - {' / '.join([a.replace(Fore.YELLOW, '').replace(Fore.BLUE, '').replace(Style.RESET_ALL, '') for a in annotations])}")
+                            console_lines.append(f"{bullet_console}{console_display} - {' / '.join(annotations)}")
+                            plain_annotations = [re.sub(r'\x1b\[[0-9;]*m', '', a) for a in annotations]
+                            file_lines.append(f"{bullet_file}{file_display} - {' / '.join(plain_annotations)}")
                         else:
-                            console_lines.append(console_display)
-                            file_lines.append(file_display)
+                            console_lines.append(f"{bullet_console}{console_display}")
+                            file_lines.append(f"{bullet_file}{file_display}")
                 console_lines.append("")
                 file_lines.append("")
 
+            # Prize handling – dash bullet + optional debug CRDB in parentheses
+            prize_console_prefix = f"{Fore.MAGENTA}- Prize Car : "
+            prize_file_prefix = "- Prize Car : "
+            sticker_console_prefix = f"{Fore.MAGENTA}- Prize Sticker : "
+            sticker_file_prefix = "- Prize Sticker : "
+
             if special_prize:
-                console_lines.append(f"{Fore.MAGENTA}Prize Car : {self.translations.get(special_prize, special_prize)}{Style.RESET_ALL}")
-                file_lines.append(f"Prize Car : {self.translations.get(special_prize, special_prize)}")
+                translated = self.translations.get(special_prize, special_prize)
+                raw_key = special_prize
+                is_sticker = False
+            elif prize_type == "Car":
+                translated = self.translations.get(prize_value, prize_value)
+                raw_key = prize_value
+                is_sticker = False
+            elif prize_type == "Sticker":
+                translated = self.translations.get(prize_value, prize_value)
+                raw_key = prize_value
+                is_sticker = True
             else:
-                if prize_type == "Car":
-                    console_lines.append(f"{Fore.MAGENTA}Prize Car : {self.translations.get(prize_value, prize_value)}{Style.RESET_ALL}")
-                    file_lines.append(f"Prize Car : {self.translations.get(prize_value, prize_value)}")
-                elif prize_type == "Sticker":
-                    console_lines.append(f"{Fore.MAGENTA}Prize Sticker : {self.translations.get(prize_value, prize_value)}{Style.RESET_ALL}")
-                    file_lines.append(f"Prize Sticker : {self.translations.get(prize_value, prize_value)}")
+                if reward_entries:
+                    max_win = -1
+                    max_info = None
+                    for r in reward_entries:
+                        if not isinstance(r, dict):
+                            continue
+                        w = r.get("WinsRequired")
+                        info = r.get("RewardInfo", {}) or {}
+                        if isinstance(w, int) and w > max_win:
+                            max_win = w
+                            max_info = info
+                    if max_info and max_info.get("rewardType") == 11 and max_info.get("name"):
+                        raw_key = max_info.get("name")
+                        translated = self.translations.get(raw_key, raw_key)
+                        is_sticker = False
+                    else:
+                        translated = None
+                        raw_key = None
                 else:
-                    if reward_entries:
-                        max_win = -1
-                        max_info = None
-                        for r in reward_entries:
-                            if not isinstance(r, dict):
-                                continue
-                            w = r.get("WinsRequired")
-                            info = r.get("RewardInfo", {}) or {}
-                            if isinstance(w, int) and w > max_win:
-                                max_win = w
-                                max_info = info
-                        if max_info and max_info.get("rewardType") == 11 and max_info.get("name"):
-                            console_lines.append(f"{Fore.MAGENTA}Prize Car : {self.translations.get(max_info.get('name'), max_info.get('name'))}{Style.RESET_ALL}")
-                            file_lines.append(f"Prize Car : {self.translations.get(max_info.get('name'), max_info.get('name'))}")
+                    translated = None
+                    raw_key = None
+                is_sticker = False
+
+            if translated is not None:
+                if is_sticker:
+                    console_base = f"{sticker_console_prefix}{translated}"
+                    file_base = f"{sticker_file_prefix}{translated}"
+                else:
+                    console_base = f"{prize_console_prefix}{translated}"
+                    file_base = f"{prize_file_prefix}{translated}"
+
+                if self.debug and raw_key and raw_key != translated:
+                    console_base += f" ({raw_key})"
+                    file_base += f" ({raw_key})"
+
+                console_lines.append(f"{console_base}{Style.RESET_ALL}")
+                file_lines.append(file_base)
+
             console_lines.append("")
             file_lines.append("")
 
-            # Store event data
             events_data.append({
-                "start_epoch": start_epoch if start_epoch else float("inf"),  # Use inf for events without dates
+                "start_epoch": start_epoch if start_epoch else float("inf"),
                 "console_lines": console_lines,
                 "file_lines": file_lines
             })
 
-        # Sort events by start_epoch
         events_data.sort(key=lambda x: x["start_epoch"])
 
-        # Generate final output
         console_lines = []
         file_lines = []
         for event in events_data:

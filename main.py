@@ -344,7 +344,7 @@ def main():
 
     try:
         debug_log("Starting MilestoneDataParser phase", "info")
-        mdp = MilestoneDataParser(folder=text_dir, translations=translations)
+        mdp = MilestoneDataParser(folder=text_dir, translations=translations, debug=debug_mode)
         milestone_output = mdp.process()
         if milestone_output:
             all_outputs.append("=== MilestoneDataParser Output ===\n" + milestone_output + "\n")
