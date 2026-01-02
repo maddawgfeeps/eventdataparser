@@ -65,14 +65,21 @@ class TournamentParser:
         header = f"Tournament Season {event_id}"
         if time_str:
             header += f" - {time_str}"
-        formatted_lines = [header]
+        formatted_lines = [header, ""]  # Add blank line after header
 
         for day, day_data in period_details.items():
             for race, race_data in day_data.items():
                 slot_id = race_data.get("SlotId")
                 matched_names = self.collections.get(slot_id, ["Unknown"])
                 name_code = matched_names[0] if isinstance(matched_names, list) and matched_names else matched_names
+                
+                # Translated name
                 nice_name = self.translations.get(name_code, name_code)
+
+                # Build display name with raw code in debug mode
+                display_name = nice_name
+                if self.debug and name_code != nice_name:
+                    display_name += f" ({name_code})"
 
                 restrictions = race_data.get("Restrictions", [])
                 if restrictions:
@@ -86,9 +93,10 @@ class TournamentParser:
 
                 line = (
                     f"{day.replace('Day', 'Day ')} / {race.replace('Race', 'Race ')}\n"
-                    f"- {nice_name} ({restriction_str}) ({distance_str}) ({cooldown_str} Reset)"
+                    f"- {display_name} ({restriction_str}) ({distance_str}) ({cooldown_str} Reset)"
                 )
                 formatted_lines.append(line)
+                formatted_lines.append("")  # Blank line between races for readability
 
         return formatted_lines
 
@@ -98,17 +106,21 @@ class TournamentParser:
             return
         path = os.path.join(self.folder, self.output_file)
         with open(path, 'w', encoding='utf-8') as f:
-            for line in lines:
-                f.write(line + '\n')
+            f.write("\n".join(lines))
         debug_log(f"Tournament output written to {path}", "success")
 
     def process(self):
         debug_log("Starting TournamentParser processing", "info")
 
-        config_files = [f for f in os.listdir(self.folder) if os.path.isfile(os.path.join(self.folder, f)) and re.search(r'TOURNAMENT_.*\.txt', f, re.IGNORECASE) and f != 'tournament_output.txt']
+        config_files = [
+            f for f in os.listdir(self.folder)
+            if os.path.isfile(os.path.join(self.folder, f))
+            and re.search(r'TOURNAMENT_.*\.txt', f, re.IGNORECASE)
+            and f.lower() != 'tournament_output.txt'
+        ]
 
         if not config_files:
-            debug_log("No tournament config files found.", "error")
+            debug_log("No tournament config files found.", "warn")
             return ""
 
         all_lines = []
@@ -118,9 +130,12 @@ class TournamentParser:
                 with open(os.path.join(self.folder, config_file), 'r', encoding='utf-8') as f:
                     config_data = json.load(f)
                 lines = self.extract_tournament_data(config_data)
-                all_lines.extend(lines + ["\n" + "="*50 + "\n"])
+                all_lines.extend(lines)
+                all_lines.append("=" * 50)  # Separator
+                all_lines.append("")  # Extra spacing
+
                 print("\n".join(lines))
-                print("="*50)
+                print("=" * 50)
             except Exception as e:
                 debug_log(f"Failed to process {config_file}: {e}", "error")
                 if self.debug:

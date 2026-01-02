@@ -42,10 +42,21 @@ class ShowdownParser:
                 continue
 
             dyno_raw = entry.get("WR-DYNO")
+            best_et_raw = entry.get("WR-BEST ET")
+
             try:
-                dyno = float(dyno_raw)
-            except:
+                dyno = float(dyno_raw) if dyno_raw not in (None, "", "n.A.") else None
+            except (TypeError, ValueError):
                 dyno = None
+
+            try:
+                best_et = float(best_et_raw) if best_et_raw not in (None, "", "n.A.", "0.000") else None
+            except (TypeError, ValueError):
+                best_et = None
+
+            # Prefer valid Best ET (>0), otherwise fall back to Dyno
+            display_time = best_et if best_et is not None and best_et > 0 else dyno
+            source = "ET" if best_et is not None and best_et > 0 else "Dyno"
 
             tier = entry.get("Un")
             star = entry.get("★")
@@ -56,9 +67,9 @@ class ShowdownParser:
                     ec_overwrite += 1
                 else:
                     ec_only_add += 1
-                car_stats_map[base_id] = (dyno, star, tier, True)
+                car_stats_map[base_id] = (display_time, star, tier, True, source)
             elif car_id not in car_stats_map:
-                car_stats_map[car_id] = (dyno, star, tier, False)
+                car_stats_map[car_id] = (display_time, star, tier, False, source)
 
         debug_log(
             f"Total WR entries processed: {len(car_stats_map)} (EC overwrote {ec_overwrite}, EC-only added {ec_only_add})",
@@ -85,10 +96,14 @@ class ShowdownParser:
                 pretty = car_id
             elif not wr_entry:
                 self.missing_wr_data.add(car_id)
-                debug_log(f"No WR dyno data for {car_id}", "info")
+                debug_log(f"No WR data for {car_id}", "info")
 
-            dyno, star, tier, _ = wr_entry if wr_entry else (None, None, None, None)
-            cars.append((car_id, pretty, dyno, tier, star))
+            if wr_entry:
+                display_time, star, tier, _, source = wr_entry
+            else:
+                display_time, star, tier, _, source = None, None, None, None, "Dyno"
+
+            cars.append((car_id, pretty, display_time, tier, star, source))
         return cars
 
     def format_output(self, title, start, end, cars, showdown_type="Default", cars_for_sale=None):
@@ -118,18 +133,19 @@ class ShowdownParser:
         mark_quarter = has_half_mile and has_quarter_mile
 
         def sort_key(car):
-            _, _, dyno, tier, _ = car
+            _, _, display_time, tier, _, _ = car
             tier_num = int(tier[1]) if tier and tier.startswith("T") and tier[1].isdigit() else 0
             group_priority = 1 if tier_num >= 4 else 0
-            dyno_value = dyno if dyno is not None else 999.999
-            return (-group_priority, dyno_value)
+            time_value = display_time if display_time is not None else 999.999
+            return (-group_priority, time_value)
 
         sorted_cars = sorted(cars, key=sort_key)
 
-        for car_id, pretty, dyno, tier, star in sorted_cars:
+        for car_id, pretty, display_time, tier, star, source in sorted_cars:
             tier_str = tier or "?"
             star_str = star or "?"
             star_col = colorize_star_for_console(star_str)
+            time_label = "Best ET" if source == "ET" else "Dyno"
             note = " (1/4 mile Time Only)" if mark_quarter and tier in ["T1", "T2", "T3"] else ""
 
             sale_info_file = ""
@@ -139,18 +155,29 @@ class ShowdownParser:
                 sale_info_file = f" - Car For Sale - {quantity} Gold Coins"
                 sale_info_console = f" - Car For Sale - {Fore.YELLOW}{quantity} Gold Coins{Style.RESET_ALL}"
 
-            if dyno is not None:
-                file_line = f"• {pretty} (Dyno - {dyno:.3f}) ({tier_str} {star_str}){sale_info_file}{note}"
-            else:
-                file_line = f"• {pretty} (Dyno - N/A) ({tier_str} {star_str}){sale_info_file}{note}"
-            file_lines.append(file_line)
+            # Base pretty name (translated or fallback)
+            file_pretty = pretty
+            console_pretty = pretty
 
-            if car_id in self.unknown_cars:
-                console_line = f"• {Fore.RED}{pretty} (Dyno - N/A){Style.RESET_ALL} ({tier_str} {star_col}){sale_info_console}{note}"
-            elif dyno is None:
-                console_line = f"• {Fore.YELLOW}{pretty} (Dyno - N/A){Style.RESET_ALL} ({tier_str} {star_col}){sale_info_console}{note}"
+            # Append raw car_id in debug mode if different from pretty (and not crdb_mode)
+            if self.debug and not self.crdb_mode and car_id != pretty:
+                debug_suffix = f" ({car_id})"
+                file_pretty += debug_suffix
+                console_pretty += debug_suffix
+
+            if display_time is not None:
+                file_line = f"• {file_pretty} ({time_label} - {display_time:.3f}) ({tier_str} {star_str}){sale_info_file}{note}"
+                console_line = f"• {console_pretty} ({time_label} - {display_time:.3f}) ({tier_str} {star_col}){sale_info_console}{note}"
             else:
-                console_line = f"• {pretty} (Dyno - {dyno:.3f}) ({tier_str} {star_col}){sale_info_console}{note}"
+                file_line = f"• {file_pretty} ({time_label} - N/A) ({tier_str} {star_str}){sale_info_file}{note}"
+                if car_id in self.unknown_cars:
+                    console_line = f"• {Fore.RED}{console_pretty} ({time_label} - N/A){Style.RESET_ALL} ({tier_str} {star_col}){sale_info_console}{note}"
+                elif car_id in self.missing_wr_data:
+                    console_line = f"• {Fore.YELLOW}{console_pretty} ({time_label} - N/A){Style.RESET_ALL} ({tier_str} {star_col}){sale_info_console}{note}"
+                else:
+                    console_line = f"• {console_pretty} ({time_label} - N/A) ({tier_str} {star_col}){sale_info_console}{note}"
+
+            file_lines.append(file_line)
             console_lines.append(console_line)
 
         return "\n".join(file_lines), "\n".join(console_lines)
@@ -273,7 +300,7 @@ class ShowdownParser:
                 print(f"    • {car_id}")
 
         if self.missing_wr_data:
-            print(f"{Fore.CYAN}[SUMMARY]{Style.RESET_ALL} {len(self.missing_wr_data)} cars missing WR dyno data:")
+            print(f"{Fore.CYAN}[SUMMARY]{Style.RESET_ALL} {len(self.missing_wr_data)} cars missing WR data:")
             for car_id in sorted(self.missing_wr_data):
                 print(f"    • {car_id}")
 
